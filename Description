@@ -36,4 +36,41 @@ fornendo informazioni chiare agli utenti.
 Sfruttando le capacità di questi componenti avanzati, questo sistema di gestione del 
 parcheggio definisce un nuovo standard di funzionalità, efficienza e facilità d'uso 
 nell'infrastruttura di parcheggio.
+
+-----------------------------------------------------------------------------------------------------------------------
+
+In this innovative project, my goal was to design an advanced parking management system 
+by integrating various components to enhance functionality and user experience. The system
+incorporates two servo motors, two IR sensors, a photoresistor sensor for ambient light
+detection, and an LCD1602 display.
+
+At the heart of the system are two IR sensors strategically placed at the entrance and 
+exit of the parking lot. These sensors serve as the primary means of detecting vehicles
+entering and leaving. When a vehicle approaches the entrance, the corresponding IR sensor 
+detects its presence and signals the microcontroller to act.
+
+Once the signal is received, the microcontroller activates the corresponding servo motor
+responsible for opening the entrance gate. At the same time, it updates the LCD display 
+to reflect the change in the number of available parking spaces. Similarly, when a vehicle
+approaches the exit, the second IR sensor triggers the microcontroller to operate the exit
+gate’s servo motor and update the parking space count on the display.
+
+Adding to the system's sophistication is the photoresistor sensor, which dynamically adjusts
+the brightness of the LCD display based on ambient light conditions. During the day, when
+natural light is abundant, the display’s brightness is automatically reduced for optimal 
+visibility. Conversely, in low-light conditions such as at night, the sensor increases the
+display's brightness to ensure clear readability.
+
+This integration of multiple sensors and servo motors allows for seamless and efficient
+management of vehicle entry and exit within the parking lot. Real-time updates on the LCD
+display, combined with adaptive brightness control, enhance user convenience and safety, 
+regardless of the time of day.
+
+This modern technological approach not only simplifies the parking experience for drivers
+but also helps optimize the use of available parking spaces. Additionally, the LCD display
+shows an appropriate message when the parking lot is full, providing clear information to
+users.
+
+By leveraging the capabilities of these advanced components, this parking management system
+sets a new standard of functionality, efficiency, and ease of use in parking infrastructure.
     

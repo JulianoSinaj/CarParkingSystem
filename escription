@@ -1,0 +1,39 @@
+
+In questo progetto innovativo, il mio obiettivo era progettare un sistema avanzato 
+di gestione del parcheggio integrando diversi componenti per migliorare la funzionalità
+e l'esperienza dell'utente. Il sistema incorpora 2 "servo motors", 2 "IR sensors",
+un "photoresistor sensor" per il rilevamento della luce ambientale e un LCD1602 display.
+
+Al cuore del sistema ci sono i due sensori IR posizionati strategicamente all'ingresso e 
+all'uscita del parcheggio. Questi sensori fungono da principale mezzo di rilevamento dei
+veicoli in entrata e in uscita. Quando un veicolo si avvicina all'ingresso, il sensore IR 
+corrispondente ne rileva la presenza e segnala al microcontrollore di agire.
+
+Il microcontrollore, una volta ricevuto il segnale, attiva il motore servo corrispondente
+responsabile dell'apertura del cancello d'ingresso. Allo stesso tempo, aggiorna il display 
+LCD per riflettere la variazione dei posti auto disponibili. Allo stesso modo, quando un 
+veicolo si avvicina all'uscita, il secondo sensore IR attiva il microcontrollore per far 
+funzionare il motore servo del cancello d'uscita e aggiornare il conteggio dei posti auto 
+sul display.
+
+Aumentando la sofisticatezza del sistema c'è il sensore fotoresistivo, che regola 
+dinamicamente la luminosità del display LCD in base alle condizioni di luce ambientale.
+Durante il giorno, quando la luce naturale è abbondante, la luminosità del display viene
+automaticamente ridotta per una visibilità ottimale. Al contrario, in condizioni di 
+scarsa luminosità come di notte, il sensore aumenta la luminosità del display per garantire
+una chiara leggibilità.
+
+Questa integrazione di sensori multipli e motori servo consente una gestione senza soluzione
+di continuità ed efficiente dell'ingresso e dell'uscita dei veicoli nel parcheggio. Gli
+aggiornamenti in tempo reale sul display LCD, abbinati al controllo della luminosità adattiva,
+migliorano la comodità e la sicurezza dell'utente, indipendentemente dall'ora del giorno.
+
+Questo moderno approccio tecnologico non solo semplifica l'esperienza di parcheggio per gli
+automobilisti, ma aiuta anche ad ottimizzare l'utilizzo degli spazi disponibili nel parcheggio
+auto. Inoltre, il display LCD mostra un messaggio appropriato quando il parcheggio è pieno,
+fornendo informazioni chiare agli utenti.
+
+Sfruttando le capacità di questi componenti avanzati, questo sistema di gestione del 
+parcheggio definisce un nuovo standard di funzionalità, efficienza e facilità d'uso 
+nell'infrastruttura di parcheggio.
+    

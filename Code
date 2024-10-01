@@ -1,0 +1,359 @@
+// Pin definitions for LCD
+const int LCD_RS = 12;  // LCD Register select pin
+const int LCD_EN = 11;  // LCD Enable pin
+const int LCD_D4 = 5;   // LCD Data pin 4
+const int LCD_D5 = 4;   // LCD Data pin 5
+const int LCD_D6 = 3;   // LCD Data pin 6
+const int LCD_D7 = 2;   // LCD Data pin 7
+// Define the pins for IR sensors, servos, and the photoresistor
+const int IR_SENSOR_ENTRANCE_TRIG = A4;   // Trigger pin for entrance IR sensor
+const int IR_SENSOR_ENTRANCE_ECHO = A5;   // Echo pin for entrance IR sensor
+const int IR_SENSOR_EXIT_TRIG = 7;        // Trigger pin for exit IR sensor
+const int IR_SENSOR_EXIT_ECHO = 9;        // Echo pin for exit IR sensor
+const int SERVO_ENTRANCE = A2;            // Pin for entrance servo motor
+const int SERVO_EXIT = 10;                // Pin for exit servo motor
+const int PHOTORESISTOR_PIN = A0;         // Pin for the photoresistor
+
+// Variables that will be used
+unsigned long previousMillis = 0;
+const long interval = 100; // Interval for checking sensors (in milliseconds)
+int availablePlaces = 3; // Initial number of available spaces
+const int maxSpaces = 3; // Maximum number of available spaces
+
+// Function declarations
+void initializeComponents();  // Initializes all the components used in the system
+boolean carEnteringDetected();  // Checks if a car is detected entering the parking area
+boolean carLeavingDetected();  // Checks if a car is detected leaving the parking area
+void openGate(int servoPin);  // Opens the gate controlled by the specified servo motor pin
+void closeGate(int servoPin);  // Closes the gate controlled by the specified servo motor pin
+void updateLCD(int availablePlaces);  // Updates the LCD display with the number of available parking places
+int readLightLevel();  // Reads the light level using the photoresistor sensor
+void delay_ms(unsigned int milliseconds);  // Delays execution for the specified number of milliseconds
+void delayMicro(unsigned int us);  // Delays execution for the specified number of microseconds
+void outputMode(uint8_t pin, uint8_t mode);  // Configures the specified pin as input or output
+void turnHigh(uint8_t pin, uint8_t value);  // Sets the specified pin to a high or low state
+int returnValue(uint8_t pin);  // Returns the value read from the specified pin
+unsigned long customMillis();  // Returns the current time in milliseconds since startup
+unsigned long measureDistance(int trigPin, int echoPin);  // Measures distance using an ultrasonic sensor
+void displayMessage(const char* message);  // Displays the specified message on the LCD
+void writeLCDCommand(unsigned char cmd);  // Writes a command to the LCD
+void writeLCDData(unsigned char dat);  // Writes data to the LCD
+void writeLCDNibble(unsigned char lcdbits);  // Writes a nibble (4 bits) to the LCD
+void lcd_move(unsigned char row, unsigned char col);  // Moves the cursor to the specified LCD position
+void lcd_stringout(char* str);  // Displays a string on the LCD
+void clearScreen();  // Clears the LCD screen
+
+void setup() {
+    initializeComponents();
+    // Display "Welcome" on the LCD
+    displayMessage("Welcome");
+    delay_ms(2000); // Delay for 2 seconds
+
+    // Display "Juliano Sinaj" on the LCD
+    displayMessage(" Juliano Sinaj");
+    delay_ms(2000); // Delay for 2 seconds
+
+    // Display available spaces by using the updateLCD()
+    updateLCD(availablePlaces);
+}
+
+void loop() {
+    if (availablePlaces > 0 && carEnteringDetected()) {
+        openGate(SERVO_ENTRANCE);
+        // Keep the gate open while the car is detected
+        while (measureDistance(IR_SENSOR_ENTRANCE_TRIG, IR_SENSOR_ENTRANCE_ECHO) < 60) { 
+            delay_ms(100); // Check every 100 ms
+        }
+        //Close the entry gate 
+        closeGate(SERVO_ENTRANCE);
+        //Decrise the number of avaiable places by 1
+        availablePlaces--;
+        updateLCD(availablePlaces);
+    }
+
+    if (availablePlaces < maxSpaces && carLeavingDetected()) {
+        openGate(SERVO_EXIT);
+        // Keep the gate open while the car is detected
+        while (measureDistance(IR_SENSOR_EXIT_TRIG, IR_SENSOR_EXIT_ECHO) < 60) {    
+            delay_ms(100); // Check every 100 ms
+        }
+         //Close the exit gate 
+        closeGate(SERVO_EXIT);
+        //Increase the number of avaiable places by 1
+        availablePlaces++;
+        updateLCD(availablePlaces);
+    }
+}
+
+boolean carEnteringDetected() {
+    // Check if the measured distance from the entry IR sensor is less than 60cm
+    return measureDistance(IR_SENSOR_ENTRANCE_TRIG, IR_SENSOR_ENTRANCE_ECHO) < 60;
+}
+
+
+
+boolean carLeavingDetected() {
+    // Check if the measured distance from the exit IR sensor is less than 60cm
+    return measureDistance(IR_SENSOR_EXIT_TRIG, IR_SENSOR_EXIT_ECHO) < 60;
+}
+
+// Function definitions
+void initializeComponents() {
+    // Initialize IR sensors
+    outputMode(IR_SENSOR_ENTRANCE_TRIG, 1);  // Set IR sensor entrance trigger pin as output
+    outputMode(IR_SENSOR_ENTRANCE_ECHO, 0);  // Set IR sensor entrance echo pin as input
+    outputMode(IR_SENSOR_EXIT_TRIG, 1);      // Set IR sensor exit trigger pin as output
+    outputMode(IR_SENSOR_EXIT_ECHO, 0);      // Set IR sensor exit echo pin as input
+
+    // Initialize servo motors
+    outputMode(SERVO_ENTRANCE, 1);  // Set servo entrance pin as output
+    outputMode(SERVO_EXIT, 1);      // Set servo exit pin as output
+
+    // Set servos to 0 degrees (closed position)
+    closeGate(SERVO_ENTRANCE);  // Function to close entrance gate
+    closeGate(SERVO_EXIT);      // Function to close exit gate
+
+    // Initialize LCD
+    outputMode(LCD_RS, 1);   // Set LCD RS pin as output
+    outputMode(LCD_EN, 1);   // Set LCD EN pin as output
+    outputMode(LCD_D4, 1);   // Set LCD D4 pin as output
+    outputMode(LCD_D5, 1);   // Set LCD D5 pin as output
+    outputMode(LCD_D6, 1);   // Set LCD D6 pin as output
+    outputMode(LCD_D7, 1);   // Set LCD D7 pin as output
+
+    // LCD initialization sequence
+    delay_ms(5);            // Wait for LCD to power up
+    writeLCDCommand(0x03);  // Send command 0x03
+    delay_ms(5);
+    writeLCDCommand(0x03);  // Send command 0x03 again
+    delayMicro(150);        // Delay of 150 microseconds
+    writeLCDCommand(0x03);  // Send command 0x03 again
+    writeLCDCommand(0x02);  // Set to 4-bit mode
+
+    writeLCDCommand(0x28);  // 4-bit mode, 2 lines, 5x8 font
+    writeLCDCommand(0x08);  // Display off
+    clearScreen();          // Clear display
+    delayMicro(2000);       // Delay of 2 seconds
+    writeLCDCommand(0x06);  // Entry mode set
+    writeLCDCommand(0x0C);  // Display on, cursor off, blink off
+}
+void openGate(int servoPin) {
+    // Move the servo from current position to 90 degrees
+    for (int pos = 0; pos <= 90; pos++) {
+        // Set servo to high position
+        turnHigh(servoPin, 1);
+        // Map the position to a delay time between 1000 to 2000 microseconds
+        delayMicro(map(pos, 0, 90, 1000, 2000)); 
+        // Set servo to low position
+        turnHigh(servoPin, 0);
+        // Delay for 10 milliseconds
+        delay_ms(10);
+    }
+}
+void closeGate(int servoPin) {
+    // Move the servo back to 0 degrees
+    for (int pos = 90; pos >= 0; pos--) {  // Decrease the servo position from 90 to 0
+        turnHigh(servoPin, 1);  // Activate the servo motor
+        delayMicro(map(pos, 0, 90, 700, 2000));  // Map and delay the position
+        turnHigh(servoPin, 0);  // Deactivate the servo motor
+        delay_ms(10);  // Small delay for stability
+    }
+}
+
+unsigned long measureDistance(int trigPin, int echoPin) {
+    // Send trigger pulse to start the distance measurement
+    turnHigh(trigPin, 0);   // Set trigPin low
+    delayMicro(2);          // Wait for 2 microseconds
+    turnHigh(trigPin, 1);   // Set trigPin high to send a 10 microsecond pulse
+    delayMicro(10);         // Wait for 10 microseconds
+    turnHigh(trigPin, 0);   // Reset trigPin to low
+    // Measure the duration of the echo pulse
+    unsigned long duration = pulseIn(echoPin, 1);   // Read the duration of the pulse in microseconds
+    // Calculate the distance in centimeters
+    unsigned long distance = duration / 29 / 2;     // Calculate distance based on the speed of sound (29 microseconds per centimeter)
+    return distance;  // Return the calculated distance in centimeters
+}
+
+void updateLCD(int availablePlaces) {
+  //when the parking will be full, the LCD will display the message "Parking Full !"
+    if (availablePlaces <= 0) {
+    clearScreen(); // Clear display
+    lcd_move(0, 0); // In the first row, first column
+    lcd_stringout("Parking Full !"); // "Pakring Full" will be displayed
+    }else {
+    clearScreen(); // Clear display
+    lcd_move(0, 0); // In the first row, first column
+    lcd_stringout("Spaces: ");
+    // Print the number of availabePlaces after every entry/exit
+    char buffer[3];
+    itoa(availablePlaces, buffer, 10);
+    lcd_stringout(buffer);
+    }
+  }
+
+void displayMessage(const char* message) {
+    clearScreen(); // Clear display
+    lcd_move(0, 0); // In the first row, first column
+    lcd_stringout((char*)message); // Print the messages
+}
+
+void writeLCDCommand(unsigned char cmd) {
+    turnHigh(LCD_RS, 0); // Sets the RS pin of the LCD to low (0)
+    writeLCDNibble(cmd >> 4); // Calls the function writeLCDNibble with the higher 4 bits of the cmd byte
+    writeLCDNibble(cmd); // Calls the function writeLCDNibble with the lower 4 bits of the cmd byte
+}
+void writeLCDData(unsigned char dat) {
+    turnHigh(LCD_RS, 1); // Sets the RS pin of the LCD to high (1)
+    writeLCDNibble(dat >> 4); // Sends the higher 4 bits (nibble) of the 8-bit data to the LCD
+    writeLCDNibble(dat); // Sends the lower 4 bits (nibble) of the 8-bit data to the LCD
+}
+void writeLCDNibble(unsigned char lcdbits) {
+    // Set the LCD data line D4 to the least significant bit of lcdbits
+    turnHigh(LCD_D4, lcdbits & 0x01);
+    // Set the LCD data line D5 to the second least significant bit of lcdbits
+    turnHigh(LCD_D5, (lcdbits >> 1) & 0x01);
+    // Set the LCD data line D6 to the third least significant bit of lcdbits
+    turnHigh(LCD_D6, (lcdbits >> 2) & 0x01);
+    // Set the LCD data line D7 to the most significant bit of lcdbits
+    turnHigh(LCD_D7, (lcdbits >> 3) & 0x01);
+    // Send an enable pulse to latch the data into the LCD
+    pulseEnable();
+}
+
+void pulseEnable() {
+    turnHigh(LCD_EN, 0);// Set the enable pin (LCD_EN) to low
+    delayMicro(1);// Wait for 1 microsecond
+    turnHigh(LCD_EN, 1);// Set the enable pin (LCD_EN) to high
+    delayMicro(1);    // Wait for 1 microsecond
+    turnHigh(LCD_EN, 0);// Set the enable pin (LCD_EN) to low again
+    delayMicro(100);// Wait for 100 microseconds to allow the LCD to process the command
+}
+
+void lcd_move(unsigned char row, unsigned char col) {
+   // Array of offsets for each row of the LCD
+    int rowOffsets[] = {0x00, 0x40, 0x14, 0x54};
+  // Combine the column and row offset and send the command to the LCD
+    writeLCDCommand(0x80 | (col + rowOffsets[row]));
+}
+
+void lcd_stringout(char* str) {
+    while (*str) { // Loop through each character in the string
+        writeLCDData(*str++); // Write the current character to the LCD and move to the next one
+    }
+}
+
+void clearScreen() {
+    writeLCDCommand(0x01); // Send the clear display command to the LCD
+    delayMicro(2000); // Wait for the command to execute (2ms delay)
+}
+
+void delay_ms(unsigned int milliseconds) {
+    while (milliseconds) { // Loop until the specified milliseconds have elapsed
+        for (int i = 0; i < F_CPU / 4000; i++) { // Loop to create a delay for each millisecond
+            asm volatile("nop"); // No operation (assembly instruction to do nothing)
+        }
+        milliseconds--; // Decrement the milliseconds counter
+    }
+}
+
+void delayMicro(unsigned int us) {
+    while (us) {
+        // Inner loop creates the delay based on CPU frequency
+        for (int i = 0; i < F_CPU / 4000000; i++) {
+            asm volatile("nop"); // No operation, used to waste time
+        }
+        us--; // Decrement the microseconds counter
+    }
+}
+
+void outputMode(uint8_t pin, uint8_t mode) {
+    if (mode == 1) { // Set as output
+        if (pin >= 0 && pin <= 7) {
+            DDRD |= (1 << pin); // Digital pins 0-7
+        } else if (pin >= 8 && pin <= 13) {
+            DDRB |= (1 << (pin - 8)); // Digital pins 8-13
+        } else if (pin >= A0 && pin <= A5) {
+            DDRC |= (1 << (pin - A0)); // Analog pins A0-A5
+        }
+    } else { // Set as input
+        if (pin >= 0 && pin <= 7) {
+            DDRD &= ~(1 << pin); // Digital pins 0-7
+        } else if (pin >= 8 && pin <= 13) {
+            DDRB &= ~(1 << (pin - 8)); // Digital pins 8-13
+        } else if (pin >= A0 && pin <= A5) {
+            DDRC &= ~(1 << (pin - A0)); // Analog pins A0-A5
+        }
+    }
+}
+
+void turnHigh(uint8_t pin, uint8_t value) {
+    // Check if pin is in PORTD range (digital pins 0-7)
+    if (pin >= 0 && pin <= 7) {
+        if (value) {
+            PORTD |= (1 << pin); // Set pin high
+        } else {
+            PORTD &= ~(1 << pin); // Set pin low
+        }
+    // Check if pin is in PORTB range (digital pins 8-13)
+    } else if (pin >= 8 && pin <= 13) {
+        if (value) {
+            PORTB |= (1 << (pin - 8)); // Set pin high
+        } else {
+            PORTB &= ~(1 << (pin - 8)); // Set pin low
+        }
+    // Check if pin is in PORTC range (analog pins A0-A5)
+    } else if (pin >= A0 && pin <= A5) {
+        if (value) {
+            PORTC |= (1 << (pin - A0)); // Set pin high
+        } else {
+            PORTC &= ~(1 << (pin - A0)); // Set pin low
+        }
+    }
+}
+
+
+int returnValue(uint8_t pin) {
+    if (pin >= 0 && pin <= 7) {
+        return (PIND & (1 << pin)) ? 1 : 0; // Return the value of the digital pin from D0 to D7
+    } else if (pin >= 8 && pin <= 13) {
+        return (PINB & (1 << (pin - 8))) ? 1 : 0; // Return the value of the digital pin from D8 to D13
+    } else if (pin >= A0 && pin <= A5) {
+        return (PINC & (1 << (pin - A0))) ? 1 : 0; // Return the value of the analog pin from A0 to A5
+    }
+    return LOW; // Default return LOW if pin number is out of supported range
+}
+
+unsigned long customMillis() {
+    static unsigned long previousMillis = 0;
+    // Get current time in milliseconds
+    unsigned long currentMillis = micros() / 1000;
+    // Check for overflow (millis() overflows every ~50 days)
+    if (currentMillis < previousMillis) {
+        // Reset previousMillis to handle overflow
+        previousMillis = currentMillis;
+    }
+    // Return the time in milliseconds
+    return previousMillis;
+}
+
+int readLightLevel() {
+    outputMode(PHOTORESISTOR_PIN, 1); // Set pin as output
+    turnHigh(PHOTORESISTOR_PIN, 1); // Turn pin high to charge
+    delayMicro(10); // Charge time
+    outputMode(PHOTORESISTOR_PIN, 0); // Set pin as input
+    turnHigh(PHOTORESISTOR_PIN, 0); // Turn pin low
+
+    // Measure discharge time
+    unsigned long startTime = customMillis(); // Record start time
+    while (returnValue(PHOTORESISTOR_PIN)) { // Wait until pin goes low
+        if (customMillis() - startTime > 1000) { // Timeout after 1 second
+            return -1; // Error: timeout
+        }
+    }
+    unsigned long endTime = customMillis(); // Record end time
+
+    // Calculate light level based on discharge time
+    int lightLevel = map(endTime - startTime, 0, 1000, 1023, 0); // Map discharge time to light level (0-1023)
+
+    return lightLevel; // Return calculated light level
+}

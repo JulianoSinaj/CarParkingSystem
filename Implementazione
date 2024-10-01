@@ -1,0 +1,34 @@
+•	Connections :
+
+1.	LCD 16X02 connections: (16 pins)
+-VSS: GND
+-VDD: 5V
+-RS: Digital pin 12
+-RW: GND
+-E: Digital pin 11
+-D4: Digital pin 5
+-D5: Digital pin 4
+-D6: Digital pin 3
+-D7: Digital pin 2
+-A: 5V (backlight anode)
+-K: GND (backlight cathode)
+
+2.	IR Sensor (hc-sr04):
+-VCC: 5V
+-IR_SENSOR_ENTRANCE_TRIG: A4
+-IR_SENSOR_EXIT_TRIG: Digital pin 7 
+-IR_SENSOR_ENTRANCE_ECHO: A5
+-IR_SENSOR_EXIT_ECHO: Digital pin 9
+-GND: GND
+
+3.	Servo Motors:
+-SERVO_ENTRANCE : A2
+-SERVO_EXIT : Digital pin 10
+-VCC: 5V
+-GND: GND
+
+4.	Photoresistor-Sensor:
+-VCC: 5V
+-GND: GND
+-DO: GND
+-AO: A0

@@ -1,0 +1,68 @@
+https://wokwi.com/projects/398968235634119681
+
+
+•	Diagram.json:
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 10.2, "left": -0.6, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic2",
+      "top": 87.9,
+      "left": -196.1,
+      "attrs": { "distance": "395" }
+    },
+    {
+      "type": "wokwi-photoresistor-sensor",
+      "id": "ldr1",
+      "top": 3.2,
+      "left": -200.8,
+      "attrs": {}
+    },
+    { "type": "wokwi-servo", "id": "servo1", "top": 238, "left": -144, "attrs": {} },
+    { "type": "wokwi-servo", "id": "servo2", "top": 209.2, "left": 297.6, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd1", "top": -207.77, "left": -32, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic1",
+      "top": 97.5,
+      "left": 293.5,
+      "attrs": { "distance": "400" }
+    }
+  ],
+  "connections": [
+    [ "lcd1:RS", "uno:12", "white", [ "v57.6", "h105.9", "v38.4" ] ],
+    [ "lcd1:E", "uno:11", "white", [ "v67.2", "h95.4" ] ],
+    [ "uno:5", "lcd1:D4", "orange", [ "v-57.6", "h-111.4" ] ],
+    [ "lcd1:D6", "uno:3", "orange", [ "v19.2", "h0.2" ] ],
+    [ "servo2:V+", "uno:5V", "red", [ "h-144", "v-86.2" ] ],
+    [ "servo1:V+", "uno:5V", "red", [ "v38.5", "h288", "v-105.5" ] ],
+    [ "ultrasonic2:GND", "uno:GND.2", "black", [ "v48", "h133.2", "v0", "h130.5" ] ],
+    [ "ldr1:VCC", "uno:5V", "red", [ "h28.8", "v182.5" ] ],
+    [ "ldr1:GND", "uno:GND.1", "black", [ "h38.4", "v-0.4", "h124.5" ] ],
+    [ "ultrasonic2:VCC", "uno:5V", "red", [ "v38.4", "h303.4" ] ],
+    [ "servo1:GND", "uno:GND.2", "black", [ "v38.4", "h312.9" ] ],
+    [ "servo2:GND", "uno:GND.2", "black", [ "h-134.4", "v-38.3" ] ],
+    [ "lcd1:D5", "uno:4", "orange", [ "v28.8", "h9.7" ] ],
+    [ "lcd1:D7", "uno:2", "orange", [ "v9.6", "h115.5" ] ],
+    [ "lcd1:VDD", "uno:A1", "red", [ "v76.8", "h182.5" ] ],
+    [ "lcd1:VSS", "uno:GND.1", "black", [ "v86.4" ] ],
+    [ "lcd1:K", "uno:GND.1", "gray", [ "v48", "h-38.4" ] ],
+    [ "lcd1:RW", "uno:GND.1", "white", [ "v48", "h76.7" ] ],
+    [ "ultrasonic2:TRIG", "uno:7", "gold", [ "v19.2", "h95.6", "v-76.8", "h201.6" ] ],
+    [ "ultrasonic2:ECHO", "uno:9", "blue", [ "v9.6", "h95.2", "v-134.4", "h153.6", "v-38.4" ] ],
+    [ "ldr1:AO", "uno:A0", "gold", [ "h0" ] ],
+    [ "ldr1:DO", "uno:GND.1", "violet", [ "h0" ] ],
+    [ "lcd1:A", "uno:5V", "gray", [ "v57.6", "h-9.7", "v211.2", "h28.8" ] ],
+    [ "uno:10", "servo1:PWM", "purple", [ "v0" ] ],
+    [ "servo2:PWM", "uno:A2", "green", [ "h0" ] ],
+    [ "uno:5V", "ultrasonic1:VCC", "red", [ "v124.7", "h320.6", "v-134.4" ] ],
+    [ "uno:GND.3", "ultrasonic1:GND", "black", [ "v38.3", "h216.4" ] ],
+    [ "ultrasonic1:TRIG", "uno:A4", "green", [ "v19.2", "h-129.4" ] ],
+    [ "ultrasonic1:ECHO", "uno:A5", "green", [ "v28.8", "h-129.9" ] ]
+  ],
+  "dependencies": {}
+}
